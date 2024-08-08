@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     std::println(std::cout, "P3\n{} {}\n255", image.width, image.height);
     for(const auto h : std::views::iota(0, image.height))
     {
-        //std::println(std::clog, "\rScanlines remaining: {}", image.height - h);
+        std::println(std::clog, "\rScanlines remaining: {}", image.height - h);
         for(const auto w : std::views::iota(0, image.width))
         {
             auto pixelCenter{pixel100Loc + w * pixelDeltaU + h * pixelDeltaV};
@@ -67,7 +67,6 @@ constexpr Vec3<real_type> ray_color(const Ray<real_type>& ray)
     constexpr Vec3<real_type> sphereCenter{0.0, 0.0, -1.0};
     if(hit_sphere(sphereCenter, 0.5, ray))
     {
-        std::println(std::clog, "Hit!");
         return sphereColor;
     }
     constexpr Vec3<real_type> startValue{1.0, 1.0, 1.0};

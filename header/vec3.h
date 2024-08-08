@@ -52,7 +52,7 @@ public:
     {
         this->points[0] += that.points[0];
         this->points[1] += that.points[1];
-        this->points[2] += that.points[1];
+        this->points[2] += that.points[2];
         return *this;
     }
     
@@ -107,9 +107,9 @@ public:
         return Vec3{*this} *= constant;
     }
 
-    constexpr inline friend Vec3 operator*(const Type constant, const Vec3& vec)
+    constexpr inline friend Vec3 operator*(const Type constant, Vec3 vec)
     {
-        return Vec3{vec} *= constant;
+        return vec *= constant;
     }
 
     constexpr Vec3 operator/(const Type constant) const
