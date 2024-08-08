@@ -20,6 +20,19 @@ struct Interval
     {
         return max - min;
     }
+
+    constexpr Type clamp(const Type x) const noexcept
+    {
+        if(x < min)
+        {
+            return min;
+        }
+        if(x > max)
+        {
+            return max;
+        }
+        return x;
+    }
     
     constexpr bool containts(const Type x) const noexcept
     {
