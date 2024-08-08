@@ -138,7 +138,7 @@ constexpr inline Vec3<Type> cross(const Vec3<Type>& first, const Vec3<Type>& sec
 template<Numeric Type>
 constexpr inline Vec3<Type> unit_vector(const Vec3<Type>& vec)
 {
-    return vec / vec->length();
+    return vec / vec.length();
 }
 
 #endif
