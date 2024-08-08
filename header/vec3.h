@@ -140,9 +140,44 @@ public:
     {
         return vec / vec.length();
     }
+
+    constexpr static Vec3<Type> random(const Type min = 0.000, const Type max = 0.999)
+    {
+        return Vec3<real_type>{random_number<Type>(min, max), random_number<Type>(min, max), random_number<Type>(min, max)};
+    }
 private:
     std::array<Type, 3> points;
 };
+
+template<Numeric Type>
+constexpr inline Vec3<Type> random_in_unit_sphere()
+{
+    while(true)
+    {
+        auto random{Vec3<Type>::random(-1, 1)};
+        if(random.length_squared() < 1)
+        {
+            return random;
+        }
+    }
+    
+}
+template<Numeric Type>
+constexpr inline Vec3<Type> random_unit_vector()
+{
+    return unit_vector(random_in_unit_sphere<Type>());
+}
+
+template<Numeric Type>
+constexpr inline Vec3<Type> random_on_hemisphere(const Vec3<Type>& normal)
+{
+    auto on_unit_sphere{random_unit_vector<Type>()};
+    if(dot(on_unit_sphere, normal) > 0.0)
+    {
+        return on_unit_sphere;
+    }
+    return -on_unit_sphere;
+}
 
 using point3_type = Vec3<real_type>;
 using color_type = Vec3<real_type>;

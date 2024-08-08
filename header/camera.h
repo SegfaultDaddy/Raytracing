@@ -58,8 +58,8 @@ private:
         HitRecord<real_type> record{};
         if(world.hit(ray, Interval<real_type>(0.0, infinity), record))
         {
-            constexpr color_type color{1.0, 1.0, 1.0};
-            return 0.5 * color_type{record.normal + color};
+            const auto direction{random_on_hemisphere<real_type>(record.normal)};
+            return 0.5 * ray_color(Ray<real_type>{record.point, direction}, world);
         }
         constexpr Vec3<real_type> startValue{1.0, 1.0, 1.0};
         constexpr Vec3<real_type> endValue{0.5, 0.7, 1.0};
