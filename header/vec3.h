@@ -14,7 +14,7 @@ public:
     {
     }
 
-    constexpr Vec3(Type x, Type y, Type z) : points{x, y, z}
+    constexpr Vec3(const Type x, const Type y, const Type z) : points{x, y, z}
     {
     }
 
@@ -38,12 +38,12 @@ public:
         return Vec3{-points[0], -points[1], -points[2]};
     }
     
-    constexpr Type& operator[](std::size_t index)
+    constexpr Type& operator[](const std::size_t index)
     {
         return points[index];
     }
 
-    constexpr Type operator[](std::size_t index) const
+    constexpr Type operator[](const std::size_t index) const
     {
         return points[index];
     }
@@ -64,7 +64,7 @@ public:
         return *this;
     }
     
-    constexpr Vec3& operator*=(Type constant)
+    constexpr Vec3& operator*=(const Type constant)
     {
         this->points[0] *= constant;
         this->points[1] *= constant;
@@ -72,7 +72,7 @@ public:
         return *this;
     }
     
-    constexpr Vec3& operator/=(Type constant)
+    constexpr Vec3& operator/=(const Type constant)
     {
         return *this *= 1 / constant;
     }
@@ -117,37 +117,32 @@ public:
         return Vec3{*this} /= constant;
     }
     
+    inline friend std::ostream& operator<<(std::ostream& out, const Vec3& vec)
+    {
+        return out << vec.points[0] << ' ' << vec.points[1] << ' ' << vec.points[2];
+    }
+
+    constexpr inline friend Type dot(const Vec3& first, const Vec3& second)
+    {
+        return first.points[0] * second.points[0]
+             + first.points[1] * second.points[1]
+             + first.points[2] * second.points[2];
+    }
+
+    constexpr inline friend Vec3<Type> cross(const Vec3<Type>& first, const Vec3<Type>& second)
+    {
+        return Vec3<Type>{first.points[1] * second.points[2] - first.points[2] * second.points[1],
+                          first.points[2] * second.points[0] - first.points[0] * second.points[2],
+                          first.points[0] * second.points[1] - first.points[1] * second.points[0]};
+    }
+
+    constexpr inline friend Vec3<Type> unit_vector(const Vec3<Type>& vec)
+    {
+        return vec / vec.length();
+    }
 private:
     std::array<Type, 3> points;
 };
-
-template<Numeric Type>
-inline std::ostream& operator<<(std::ostream& out, const Vec3<Type>& vec)
-{
-    return out << vec.x() << ' ' << vec.y() << ' ' << vec.z();
-}
-
-template<Numeric Type>
-constexpr inline Type dot(const Vec3<Type>& first, const Vec3<Type>& second)
-{
-    return first.x() * second.x() 
-         + first.y() * second.y() 
-         + first.z() * second.z();
-}
-
-template<Numeric Type>
-constexpr inline Vec3<Type> cross(const Vec3<Type>& first, const Vec3<Type>& second)
-{
-    return Vec3<Type>{first.y() * second.z() - first.z() * second.y(),
-                      first.z() * second.x() - first.x() * second.z(),
-                      first.x() * second.y() - first.y() * second.x()};
-}
-
-template<Numeric Type>
-constexpr inline Vec3<Type> unit_vector(const Vec3<Type>& vec)
-{
-    return vec / vec.length();
-}
 
 using point3_type = Vec3<real_type>;
 using color_type = Vec3<real_type>;

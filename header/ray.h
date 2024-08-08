@@ -25,7 +25,7 @@ public:
         return angle;
     }
 
-    constexpr Vec3<Type> at(Type t) const
+    constexpr Vec3<Type> at(const Type t) const
     {
         return origin() + t * direction();
     }
