@@ -8,6 +8,7 @@
 #include "numeric"
 #include "color.h"
 
+constexpr inline bool hit_sphere(const Vec3<real_type>& center, const real_type radius, const Ray<real_type>& ray);
 constexpr inline Vec3<real_type> ray_color(const Ray<real_type>& ray);
 
 int main(int argc, char** argv)
@@ -18,7 +19,7 @@ int main(int argc, char** argv)
     image.height = static_cast<integer_type>(image.width / aspectRatio);
     image.height = (image.height < 1)? 1 : image.height;
 
-    real_type focalLength{1.0};
+    constexpr real_type focalLength{1.0};
     Size<real_type> viewport{0.0, 2.0};
     viewport.width = viewport.height * (static_cast<real_type>(image.width) / image.height);
     Vec3<real_type> cameraCenter{0, 0, 0};
@@ -36,10 +37,10 @@ int main(int argc, char** argv)
     std::println(std::cout, "P3\n{} {}\n255", image.width, image.height);
     for(const auto h : std::views::iota(0, image.height))
     {
-        std::println(std::clog, "\rScanlines remaining: {}", image.height - h);
+        //std::println(std::clog, "\rScanlines remaining: {}", image.height - h);
         for(const auto w : std::views::iota(0, image.width))
         {
-            auto pixelCenter{pixel100Loc + (w * pixelDeltaU) + (h * pixelDeltaV)};
+            auto pixelCenter{pixel100Loc + w * pixelDeltaU + h * pixelDeltaV};
             auto rayDirection{pixelCenter - cameraCenter};
             Ray<real_type> ray{cameraCenter, rayDirection};
             auto pixelColor{ray_color(ray)};
@@ -50,8 +51,25 @@ int main(int argc, char** argv)
     return EXIT_SUCCESS;
 }
 
+constexpr bool hit_sphere(const Vec3<real_type>& center, const real_type radius, const Ray<real_type>& ray)
+{
+    auto oc{center - ray.origin()};
+    const auto a{dot(ray.direction(), ray.direction())};
+    const auto b{-2.0 * dot(ray.direction(), oc)};
+    const auto c{dot(oc, oc) - radius * radius};
+    const auto discriminant{b * b - 4.0 * a * c};
+    return discriminant >= 0;
+}
+
 constexpr Vec3<real_type> ray_color(const Ray<real_type>& ray)
 {
+    constexpr Vec3<real_type> sphereColor{1.0, 0.0, 0.0};
+    constexpr Vec3<real_type> sphereCenter{0.0, 0.0, -1.0};
+    if(hit_sphere(sphereCenter, 0.5, ray))
+    {
+        std::println(std::clog, "Hit!");
+        return sphereColor;
+    }
     constexpr Vec3<real_type> startValue{1.0, 1.0, 1.0};
     constexpr Vec3<real_type> endValue{0.5, 0.7, 1.0};
     const auto unitDireaction{unit_vector(ray.direction())};

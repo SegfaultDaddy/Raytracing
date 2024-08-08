@@ -56,6 +56,14 @@ public:
         return *this;
     }
     
+    constexpr Vec3& operator*=(const Vec3& that)
+    {
+        this->points[0] *= that.points[0];
+        this->points[1] *= that.points[1];
+        this->points[2] *= that.points[2];
+        return *this;
+    }
+    
     constexpr Vec3& operator*=(Type constant)
     {
         this->points[0] *= constant;
@@ -140,5 +148,8 @@ constexpr inline Vec3<Type> unit_vector(const Vec3<Type>& vec)
 {
     return vec / vec.length();
 }
+
+using point3_type = Vec3<real_type>;
+using color_type = Vec3<real_type>;
 
 #endif
