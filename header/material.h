@@ -6,11 +6,12 @@
 #include "ray.h"
 
 template<Numeric Type>
-struct HitRecord;
+class HitRecord;
 
 template<Numeric Type>
-struct Material
+class Material
 {
+public:
     virtual ~Material() = default;
 
     virtual bool scatter(const Ray<Type>& rayIn, const HitRecord<Type>& record, Vec3<Type>& attenuation, Ray<Type>& scattered) const
@@ -35,8 +36,7 @@ public:
         {
             scatterDirection = record.normal;
         }
-        const auto ray{Ray<Type>{record.point, scatterDirection}};
-        scattered = ray;
+        scattered = Ray<Type>{record.point, scatterDirection};
         attenuation = albedo;
         return true;
     }
@@ -64,6 +64,45 @@ public:
 private:
     Vec3<Type> albedo;
     Type fuzz;
+};
+
+template<Numeric Type>
+class Dielectric : public Material<Type>
+{
+public:
+    Dielectric(const Type refractionIndex)
+        : refractionIndex{refractionIndex}
+    {
+    }
+
+    bool scatter(const Ray<Type>& rayIn, const HitRecord<Type>& record, Vec3<Type>& attenuation, Ray<Type>& scattered) const override
+    {
+        attenuation = Vec3<Type>{1.0, 1.0, 1.0};
+        const Type rayI{record.frontFace ? (1.0 / refractionIndex) : refractionIndex};
+        const auto unitDirection{unit_vector(rayIn.direction())};
+        const Type cosTheta{std::fmin(dot(-unitDirection, record.normal), 1.0)};
+        const Type sinTheta{std::sqrt(1.0 - cosTheta * cosTheta)};
+        const bool cannotRefract{rayI * sinTheta > 1.0};
+        Vec3<Type> direction{};
+        if(cannotRefract || reflectance(cosTheta, rayI) > random_number<Type>())
+        {
+            direction = reflect(unitDirection, record.normal);
+        }
+        else
+        {
+            direction = refract(unitDirection, record.normal, rayI);
+        }
+        scattered = Ray<Type>{record.point, direction};
+        return true;
+    }
+private:
+    static Type reflectance(const Type cosine, const Type refractionIndex)
+    {
+        auto r0{(1 - refractionIndex) / (1 + refractionIndex)};   
+        r0 = r0 * r0;
+        return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+    }
+    Type refractionIndex;
 };
 
 #endif

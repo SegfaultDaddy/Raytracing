@@ -7,7 +7,7 @@
 #include "ray.h"
 
 template<Numeric Type>
-struct Material;
+class Material;
 
 template<Numeric Type>
 struct HitRecord
@@ -26,8 +26,9 @@ struct HitRecord
 };
 
 template<Numeric Type>
-struct Hittable
+class Hittable
 {
+public:
     virtual ~Hittable() = default;
 
     virtual bool hit(const Ray<Type>& ray, Interval<Type> interval, HitRecord<Type>& record) const = 0;

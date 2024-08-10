@@ -8,8 +8,8 @@ template<Numeric Type>
 class Sphere : public Hittable<Type>
 {
 public:
-    Sphere(const Vec3<Type>& center, const Type radius, std::shared_ptr<Material<Type>> mat)
-        : center{center}, radius{std::fmax(0, radius)}, material{mat}
+    Sphere(const Vec3<Type>& center, const Type radius, std::shared_ptr<Material<Type>> material)
+        : center{center}, radius{std::fmax(0, radius)}, material{material}
     {
     }
 

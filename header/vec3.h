@@ -194,12 +194,12 @@ constexpr inline Vec3<Type> reflect(const Vec3<Type>& vector, const Vec3<Type>& 
 }
 
 template<Numeric Type>
-constexpr inline Vec3<Type> refract(const Vec3<Type>& uv, const Vec3<Type>& n, const Type etaiOverEtat)
+constexpr inline Vec3<Type> refract(const Vec3<Type>& uv, const Vec3<Type>& normal, const Type etaiOverEtat)
 {
-    const auto cosTheta{std::fmin(dot(-uv, n), 1.0)};
-    const Vec3<Type> rOutPerp{etaiOverEtat * (uv + cosTheta * n)};
-    const Vec3<Type> rOutParallel{-std::sqrt(std::fabs(1.0 - rOutPerp.length_squared())) * n};
-    return rOutPerp + rOutParallel;
+    const auto cosTheta{std::fmin(dot(-uv, normal), 1.0)};
+    const auto rayOutPerp{etaiOverEtat * (uv + cosTheta * normal)};
+    const auto rayOutParallel{-std::sqrt(std::fabs(1.0 - rayOutPerp.length_squared())) * normal};
+    return rayOutPerp + rayOutParallel;
 }
 
 using point3_type = Vec3<real_type>;
