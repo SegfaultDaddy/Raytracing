@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "hittable.h"
+#include "material.h"
 
 class Camera
 {
@@ -20,7 +21,7 @@ public:
                 for(const auto sample : std::views::iota(0, samplesPerPixel))
                 {
                     const auto ray{get_ray(w, h)};
-                    pixelColor += ray_color(ray, world);
+                    pixelColor += ray_color(ray, maxDepth, world);
                 }
                 write_color(std::cout, pixelsSampleScale * pixelColor);
             }
@@ -53,13 +54,22 @@ private:
         pixel100Loc = Vec3<real_type>{viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV)};
     }
 
-    Vec3<real_type> ray_color(const Ray<real_type>& ray, const Hittable<real_type>& world) const 
+    Vec3<real_type> ray_color(const Ray<real_type>& ray, const integer_type depth, const Hittable<real_type>& world) const 
     {   
-        HitRecord<real_type> record{};
-        if(world.hit(ray, Interval<real_type>(0.0, infinity), record))
+        if(depth <= 0)
         {
-            const auto direction{random_on_hemisphere<real_type>(record.normal)};
-            return 0.5 * ray_color(Ray<real_type>{record.point, direction}, world);
+            return Vec3<real_type>{0, 0, 0};
+        }
+        HitRecord<real_type> record{};
+        if(world.hit(ray, Interval<real_type>(0.001, infinity), record))
+        {
+            Ray<real_type> scattered{};
+            Vec3<real_type> attenuation{};
+            if(record.material->scatter(ray, record, attenuation, scattered))
+            {
+                return attenuation * ray_color(scattered, depth - 1, world);
+            }
+            return Vec3<real_type>{0, 0, 0};
         }
         constexpr Vec3<real_type> startValue{1.0, 1.0, 1.0};
         constexpr Vec3<real_type> endValue{0.5, 0.7, 1.0};
@@ -81,8 +91,9 @@ private:
         return Vec3<real_type>{random_number<real_type>() - 0.5, random_number<real_type>() - 0.5, 0};
     }
 
-    constexpr static integer_type samplesPerPixel{100};
     constexpr static real_type aspectRatio{16.0 / 9.0};
+    constexpr static integer_type samplesPerPixel{100};
+    constexpr static integer_type maxDepth{50};
     Size<integer_type> image{400, 0};
     Vec3<real_type> center;
     Vec3<real_type> pixel100Loc;

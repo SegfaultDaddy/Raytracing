@@ -1,9 +1,13 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
+#include <memory>
 #include "utils.h"
 #include "interval.h"
 #include "ray.h"
+
+template<Numeric Type>
+struct Material;
 
 template<Numeric Type>
 struct HitRecord
@@ -17,6 +21,7 @@ struct HitRecord
     Vec3<Type> point;
     Vec3<Type> normal;
     Type t;
+    std::shared_ptr<Material<Type>> material;
     bool frontFace;
 };
 

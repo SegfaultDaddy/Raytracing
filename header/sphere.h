@@ -2,13 +2,14 @@
 #define SPHERE_H
 
 #include "hittable.h"
+#include "material.h"
 
 template<Numeric Type>
 class Sphere : public Hittable<Type>
 {
 public:
-    Sphere(const Vec3<Type>& center, const Type radius)
-        : center{center}, radius{std::fmax(0, radius)}
+    Sphere(const Vec3<Type>& center, const Type radius, std::shared_ptr<Material<Type>> mat)
+        : center{center}, radius{std::fmax(0, radius)}, material{mat}
     {
     }
 
@@ -38,11 +39,13 @@ public:
         const auto outwardNormal{(record.point - center) / radius};
         record.set_face_normal(ray, outwardNormal);
         record.normal = (record.point - center) / radius;
+        record.material = material;
         return true;
     }
 private:
     Vec3<Type> center;
     Type radius;
+    std::shared_ptr<Material<Type>> material;
 };
 
 #endif

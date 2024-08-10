@@ -14,6 +14,10 @@ public:
         : start{original}, angle{direction}
     {
     }
+    
+    constexpr Ray& operator=(const Ray& that) = default;
+
+    constexpr Ray& operator=(Ray&& that) = default;
 
     constexpr const Vec3<Type>& origin() const
     {
@@ -30,8 +34,8 @@ public:
         return origin() + t * direction();
     }
 private:
-    const Vec3<Type> start;
-    const Vec3<Type> angle;
+    Vec3<Type> start;
+    Vec3<Type> angle;
 };
 
 #endif

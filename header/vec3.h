@@ -145,6 +145,14 @@ public:
     {
         return Vec3<real_type>{random_number<Type>(min, max), random_number<Type>(min, max), random_number<Type>(min, max)};
     }
+
+    constexpr bool near_zero() const
+    {
+        constexpr auto s{1e-8};
+        return (std::fabs(points[0]) < s) &&
+               (std::fabs(points[1]) < s) &&
+               (std::fabs(points[1]) < s);
+    }
 private:
     std::array<Type, 3> points;
 };
@@ -177,6 +185,21 @@ constexpr inline Vec3<Type> random_on_hemisphere(const Vec3<Type>& normal)
         return on_unit_sphere;
     }
     return -on_unit_sphere;
+}
+
+template<Numeric Type>
+constexpr inline Vec3<Type> reflect(const Vec3<Type>& vector, const Vec3<Type>& normal)
+{
+    return vector - 2 * dot(vector, normal) * normal;
+}
+
+template<Numeric Type>
+constexpr inline Vec3<Type> refract(const Vec3<Type>& uv, const Vec3<Type>& n, const Type etaiOverEtat)
+{
+    const auto cosTheta{std::fmin(dot(-uv, n), 1.0)};
+    const Vec3<Type> rOutPerp{etaiOverEtat * (uv + cosTheta * n)};
+    const Vec3<Type> rOutParallel{-std::sqrt(std::fabs(1.0 - rOutPerp.length_squared())) * n};
+    return rOutPerp + rOutParallel;
 }
 
 using point3_type = Vec3<real_type>;
