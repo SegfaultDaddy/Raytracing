@@ -7,7 +7,7 @@
 #include "utils.h"
 
 template<Numeric Type>
-constexpr inline Type linear_to_gamma(Type linearComponent)
+constexpr inline Type linear_to_gamma(const Type linearComponent)
 {
     if(linearComponent > 0)
     {

@@ -63,8 +63,8 @@ private:
         HitRecord<real_type> record{};
         if(world.hit(ray, Interval<real_type>(0.001, infinity), record))
         {
-            Ray<real_type> scattered{};
             Vec3<real_type> attenuation{};
+            Ray<real_type> scattered{};
             if(record.material->scatter(ray, record, attenuation, scattered))
             {
                 return attenuation * ray_color(scattered, depth - 1, world);
