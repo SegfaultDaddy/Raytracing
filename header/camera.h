@@ -37,21 +37,30 @@ private:
 
         pixelsSampleScale = 1.0 / samplesPerPixel;
 
-        center = Vec3<real_type>{0, 0, 0};
-        constexpr real_type focalLength{1.0};
-        Size<real_type> viewport{0.0, 2.0};
+        center = lookfrom;
+
+        const auto theta{radians(vfov)};
+        const auto h{std::tan(theta / 2)};
+        Size<real_type> viewport{0.0, 2 * h * focusDist};
         viewport.width = viewport.height * (static_cast<real_type>(image.width) / image.height);
 
+        basis.w = unit_vector(lookfrom - lookat);
+        basis.u = unit_vector(cross(vup, basis.w));
+        basis.v = cross(basis.w, basis.u);
 
-        Vec3<real_type> viewportU{viewport.width, 0, 0};
-        Vec3<real_type> viewportV{0, -viewport.height, 0};
+        Vec3<real_type> viewportU{viewport.width * basis.u};
+        Vec3<real_type> viewportV{viewport.height * -basis.v};
 
         pixelDeltaU = Vec3<real_type>{viewportU / image.width};
         pixelDeltaV = Vec3<real_type>{viewportV / image.height};
 
-        Vec3<real_type> viewportUpperLeft{center - Vec3<real_type>(0, 0, focalLength) 
-                                        - viewportU / 2 - viewportV / 2};
+        Vec3<real_type> viewportUpperLeft{center - focusDist * basis.w -
+                                          viewportU / 2 - viewportV / 2};
         pixel100Loc = Vec3<real_type>{viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV)};
+
+        const auto defocusRadius{focusDist * std::tan(radians(defocusAngle / 2))};
+        defocusDiskU = basis.u * defocusRadius;
+        defocusDiskV = basis.v * defocusRadius;
     }
 
     Vec3<real_type> ray_color(const Ray<real_type>& ray, const integer_type depth, const Hittable<real_type>& world) const 
@@ -82,8 +91,9 @@ private:
     {
         const auto offset{sample_square()};
         const auto pixelSample{pixel100Loc + (i + offset.x()) * pixelDeltaU + (j + offset.y()) * pixelDeltaV};
+        const auto rayOrigin{defocusAngle <= 0 ? center : defocus_disk_sample()};
         const auto rayDirection{pixelSample - center};
-        return Ray<real_type>{center, rayDirection};
+        return Ray<real_type>{rayOrigin, rayDirection};
     }
 
     Vec3<real_type> sample_square() const
@@ -91,15 +101,35 @@ private:
         return Vec3<real_type>{random_number<real_type>() - 0.5, random_number<real_type>() - 0.5, 0};
     }
 
+    Vec3<real_type> defocus_disk_sample() const
+    {
+        const auto p{random_in_unit_disk<real_type>()};
+        return center + (p[0] * defocusDiskU) + (p[1] * defocusDiskV);
+    }
+
     constexpr static real_type aspectRatio{16.0 / 9.0};
-    constexpr static integer_type samplesPerPixel{100};
+    constexpr static integer_type samplesPerPixel{500};
     constexpr static integer_type maxDepth{50};
-    Size<integer_type> image{400, 0};
+    constexpr static real_type vfov{20};
+    constexpr static Vec3<real_type> lookfrom{13, 2, 3};
+    constexpr static Vec3<real_type> lookat{0, 0, 0};
+    constexpr static Vec3<real_type> vup{0, 1, 0};
+    constexpr static real_type defocusAngle{0.6};
+    constexpr static real_type focusDist{10.0};
+    Size<integer_type> image{1200, 0};
     Vec3<real_type> center;
     Vec3<real_type> pixel100Loc;
     Vec3<real_type> pixelDeltaU;
     Vec3<real_type> pixelDeltaV;
     real_type pixelsSampleScale;
+    struct 
+    {
+        Vec3<real_type> u;
+        Vec3<real_type> v;
+        Vec3<real_type> w;
+    } basis;
+    Vec3<real_type> defocusDiskU;
+    Vec3<real_type> defocusDiskV;
 };
 
 #endif

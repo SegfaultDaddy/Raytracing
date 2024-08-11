@@ -168,12 +168,26 @@ constexpr inline Vec3<Type> random_in_unit_sphere()
             return random;
         }
     }
-    
+    return Vec3<Type>{};   
 }
 template<Numeric Type>
 constexpr inline Vec3<Type> random_unit_vector()
 {
     return unit_vector(random_in_unit_sphere<Type>());
+}
+
+template<Numeric Type>
+constexpr inline Vec3<Type> random_in_unit_disk()
+{
+    while(true)
+    {
+        const Vec3<Type> p{random_number<Type>(-1, 1), random_number<Type>(-1, 1), 0};
+        if(p.length_squared() < 1)
+        {
+            return p;
+        }
+    }
+    return Vec3<Type>{};
 }
 
 template<Numeric Type>
