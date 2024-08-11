@@ -78,7 +78,7 @@ public:
     bool scatter(const Ray<Type>& rayIn, const HitRecord<Type>& record, Vec3<Type>& attenuation, Ray<Type>& scattered) const override
     {
         attenuation = Vec3<Type>{1.0, 1.0, 1.0};
-        const Type ri{record.frontFace ? (1.0 / refractionIndex) : refractionIndex};
+        const Type ri{record.frontFace ? 1.0 / refractionIndex : refractionIndex};
         const auto unitDirection{unit_vector(rayIn.direction())};
         const Type cosTheta{std::fmin(dot(-unitDirection, record.normal), 1.0)};
         const Type sinTheta{std::sqrt(1.0 - cosTheta * cosTheta)};

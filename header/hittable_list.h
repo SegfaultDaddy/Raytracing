@@ -14,8 +14,8 @@ public:
     HittableList() = default;
 
     HittableList(std::shared_ptr<Hittable<Type>> obj) 
-        : objects{obj}
     {
+        add(obj);
     }
     
     void add(std::shared_ptr<Hittable<Type>> obj)

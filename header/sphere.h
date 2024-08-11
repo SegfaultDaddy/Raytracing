@@ -38,7 +38,6 @@ public:
         record.point = ray.at(record.t);
         const auto outwardNormal{(record.point - center) / radius};
         record.set_face_normal(ray, outwardNormal);
-        record.normal = (record.point - center) / radius;
         record.material = material;
         return true;
     }

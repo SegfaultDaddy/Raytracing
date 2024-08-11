@@ -10,8 +10,8 @@ class Ray
 public:
     constexpr Ray() = default;
 
-    constexpr Ray(const Vec3<Type>& original, const Vec3<Type>& direction)
-        : start{original}, angle{direction}
+    constexpr Ray(const Vec3<Type>& origin, const Vec3<Type>& direction)
+        : start{origin}, angle{direction}
     {
     }
     

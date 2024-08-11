@@ -22,16 +22,16 @@ int main(int argc, char** argv)
     HittableList<real_type> world{};
     
     auto materialGround{std::make_shared<Lambertian<real_type>>(Vec3<real_type>(0.8, 0.8, 0.0))};
-    //auto materialCenter{std::make_shared<Lambertian<real_type>>(Vec3<real_type>(0.1, 0.2, 0.5))};
+    auto materialCenter{std::make_shared<Lambertian<real_type>>(Vec3<real_type>(0.1, 0.2, 0.5))};
     auto materialLeft{std::make_shared<Dielectric<real_type>>(1.50)};
-    //auto materialBubble{std::make_shared<Dielectric<real_type>>(1.00 / 1.50)};
-    //auto materialRight{std::make_shared<Metal<real_type>>(Vec3<real_type>(0.8, 0.6, 0.2), 1.0)};
+    auto materialBubble{std::make_shared<Dielectric<real_type>>(1.00 / 1.50)};
+    auto materialRight{std::make_shared<Metal<real_type>>(Vec3<real_type>(0.8, 0.6, 0.2), 1.0)};
 
     world.add(std::make_shared<Sphere<real_type>>(point3_type{0, -100.5, -1}, 100, materialGround));
-    //world.add(std::make_shared<Sphere<real_type>>(point3_type{0, 0, -1.2}, 0.5, materialCenter));
+    world.add(std::make_shared<Sphere<real_type>>(point3_type{0, 0, -1.2}, 0.5, materialCenter));
     world.add(std::make_shared<Sphere<real_type>>(point3_type{-1, 0, -1.0}, 0.5, materialLeft));
-    //world.add(std::make_shared<Sphere<real_type>>(point3_type{-1, 0, -1.0}, 0.4, materialBubble));
-    //world.add(std::make_shared<Sphere<real_type>>(point3_type{1, 0, -1.0}, 0.5, materialRight));
+    world.add(std::make_shared<Sphere<real_type>>(point3_type{-1, 0, -1.0}, 0.4, materialBubble));
+    world.add(std::make_shared<Sphere<real_type>>(point3_type{1, 0, -1.0}, 0.5, materialRight));
 
     Camera camera{};
     camera.render(world);
