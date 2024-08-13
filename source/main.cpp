@@ -23,7 +23,6 @@ int main(int argc, char** argv)
     
     auto materialGround{std::make_shared<Lambertian<real_type>>(Vec3<real_type>(0.5, 0.5, 0.5))};
     world.add(std::make_shared<Sphere<real_type>>(point3_type{0, -1000, 0}, 1000, materialGround));
-
     for(const auto a : std::views::iota(-11, 11))
     {
         for(const auto b : std::views::iota(-11, 11))

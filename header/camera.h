@@ -92,7 +92,7 @@ private:
         const auto offset{sample_square()};
         const auto pixelSample{pixel100Loc + (i + offset.x()) * pixelDeltaU + (j + offset.y()) * pixelDeltaV};
         const auto rayOrigin{defocusAngle <= 0 ? center : defocus_disk_sample()};
-        const auto rayDirection{pixelSample - center};
+        const auto rayDirection{pixelSample - rayOrigin};
         return Ray<real_type>{rayOrigin, rayDirection};
     }
 
@@ -108,7 +108,7 @@ private:
     }
 
     constexpr static real_type aspectRatio{16.0 / 9.0};
-    constexpr static integer_type samplesPerPixel{500};
+    constexpr static integer_type samplesPerPixel{200};
     constexpr static integer_type maxDepth{50};
     constexpr static real_type vfov{20};
     constexpr static Vec3<real_type> lookfrom{13, 2, 3};
@@ -116,7 +116,7 @@ private:
     constexpr static Vec3<real_type> vup{0, 1, 0};
     constexpr static real_type defocusAngle{0.6};
     constexpr static real_type focusDist{10.0};
-    Size<integer_type> image{1200, 0};
+    Size<integer_type> image{500, 0};
     Vec3<real_type> center;
     Vec3<real_type> pixel100Loc;
     Vec3<real_type> pixelDeltaU;
